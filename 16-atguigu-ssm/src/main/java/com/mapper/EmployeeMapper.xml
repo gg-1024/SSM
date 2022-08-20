@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.EmployeeMapper">
+
+    <sql id="empColumn">
+        e.emp_id, e.emp_name, e.gender, e.email,e.d_id, d.dept_id,dept_name
+    </sql>
+
+    <resultMap id="employeeMap" type="employee">
+        <id property="empId" jdbcType="INTEGER" column="emp_id"></id>
+        <result property="empName" jdbcType="VARCHAR" column="emp_name"></result>
+        <result property="gender" jdbcType="CHAR" column="gender"></result>
+        <result property="email" jdbcType="VARCHAR" column="email"></result>
+        <result property="dId" jdbcType="INTEGER" column="d_id"></result>
+        <association property="department" javaType="com.pojo.Department">
+            <id property="deptID" column="dept_id"></id>
+            <result property="deptName" column="dept_name"></result>
+        </association>
+    </resultMap>
+    <select id="getAllEmployee" resultMap="employeeMap">
+        select <include refid="empColumn"></include>
+        from mystudy.tbl_emp e join mystudy.tbl_dept d
+        on e.d_id = d.dept_id
+    </select>
+
+    <insert id="insertEmployee" parameterType="employee">
+        insert into mystudy.tbl_emp
+        <trim prefix="(" suffix=")">
+            <if test="empId!='' || empId != null">
+                emp_id,
+            </if>
+            <if test="empName!='' || empName != null">
+                emp_name,
+            </if>
+            <if test="gender!='' || gender != null">
+                gender,
+            </if>
+            <if test="email!='' || email != null">
+                email,
+            </if>
+            <if test="dId!='' || dId != null">
+                d_id
+            </if>
+        </trim>
+        <trim prefix="value(" suffix=")">
+            <if test="empId!='' || empId != null">
+                #{empId},
+            </if>
+            <if test="empName!='' || empName != null">
+                #{empName},
+            </if>
+            <if test="gender!='' || gender != null">
+                #{gender},
+            </if>
+            <if test="email!='' || email != null">
+                #{email},
+            </if>
+            <if test="dId!='' || dId != null">
+                #{dId}
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteEmployeeById" parameterType="int">
+        delete from mystudy.tbl_emp
+        where emp_id = #{empId}
+    </delete>
+
+    <select id="checkEmployeeNumber" parameterType="String" resultType="int">
+        select count(*) from mystudy.tbl_emp
+        where emp_name = #{empName}
+    </select>
+
+    <select id="getEmployeeById" parameterType="int" resultMap="employeeMap">
+        select <include refid="empColumn"></include>
+        from mystudy.tbl_emp e join mystudy.tbl_dept d
+        on e.d_id = d.dept_id
+        where emp_id = #{empId}
+    </select>
+</mapper>

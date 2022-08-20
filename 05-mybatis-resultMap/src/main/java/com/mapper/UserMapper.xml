@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.UserMapper">
+
+    <!--
+    SELECT u.id,u.`username`,u.`password`,u.birthday,b.`bookid`,b.`bookname`
+    FROM `user` u INNER JOIN book b
+    ON u.`id`=b.`uid`
+    WHERE u.id=1
+    -->
+    <select id="getUserById" parameterType="int" resultMap="userMap">
+        SELECT u.id,u.`username`,u.`password`,u.birthday,b.`bookid`,b.`bookname`
+        FROM mystudy.`user` u INNER JOIN mystudy.book b
+        ON u.`id`=b.`uid`
+        WHERE u.id=#{id}
+    </select>
+
+    <resultMap id="userMap" type="user">
+        <id property="id" column="id"></id>
+        <result property="username" column="username"></result>
+        <result property="password" column="password"></result>
+        <result property="birthday" column="birthday"></result>
+
+        <collection property="bookList" ofType="book">
+            <id property="id" column="bookid"></id>
+            <result property="name" column="bookname"></result>
+        </collection>
+    </resultMap>
+
+
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.DepartmentMapper">
+
+    <resultMap id="departmentMap" type="department">
+        <id property="deptID" column="dept_id"></id>
+        <result property="deptName" column="dept_name"></result>
+    </resultMap>
+    <select id="getAllDepartment" resultMap="departmentMap">
+        select dept_id, dept_name from mystudy.tbl_dept
+    </select>
+
+    <insert id="insertDepartment" parameterType="department">
+        insert into mystudy.tbl_dept
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptID != null and deptID !=''">
+                dept_id,
+            </if>
+            <if test="deptName != null and deptName != ''">
+                dept_name
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="deptID != null and deptID !=''">
+                #{deptID},
+            </if>
+            <if test="deptName != null and deptName != ''">
+                #{deptName}
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertDepartmentWithAllColumn" parameterType="department">
+        insert into mystudy.tbl_dept(dept_id, dept_name)
+        VALUES(#{deptID},#{deptName})
+    </insert>
+
+    <update id="updateDepartmentById" parameterType="department">
+        update mystudy.tbl_dept set dept_name = #{deptName}
+        where dept_id = #{deptID}
+    </update>
+
+    <delete id="deleteDepartmentById" parameterType="int">
+        delete from mystudy.tbl_dept
+        where dept_id = #{departmentId}
+    </delete>
+
+</mapper>

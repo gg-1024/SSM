@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--这个是mybatis的主要配置文件-->
+    <!--1、首先要读取jdbc.properties配置文件-->
+    <!--properties,的两个参数
+        a、resource，表示直接在resource目录下加载
+        b、url，表示使用绝对路径查找，不建议使用-->
+    <properties resource="jdbc.properties"></properties>
+
+    <!--设置日志输出底层的SQL代码-->
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+
+    <typeAliases>
+        <!--单个类的别名-->
+        <typeAlias type="com.pojo.Student" alias="student"></typeAlias>
+        <!--包下的别名，别名是类名的驼峰命名法，com.pojo.User->user-->
+        <package name="com.pojo"/>
+    </typeAliases>
+
+    <!--2、进行数据库连接的配置-->
+    <environments default="development">
+        <environment id="development">
+            <!--配置事务管理器，type：指定管理事务的方式
+                a、JDBC，表示由程序员管理事务
+                b、MANAGED，表示由容器管理事务-->
+            <transactionManager type="JDBC"></transactionManager>
+
+            <!--配置数据源，type：指定不同的配置方式
+                a、JNDI，Java命名目录接口，在服务器端进行数据库连接池的管理
+                b、POOLED，使用数据库连接池进行数据库的链接配置
+                c、UNPOOLED，不使用数据库连接池
+
+            private String driver;
+            private String url;
+            private String username;
+            private String password;-->
+            <dataSource type="POOLED">
+<!--                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>-->
+<!--                <property name="url" value="jdbc:mysql://localhost:3307/mystudy"/>-->
+<!--                <property name="username" value="root"/>-->
+<!--                <property name="password" value="1234"/>-->
+
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    
+    <!--3、注册 *Mapper.xml文件-->
+    <!--a、resource：从resource目录下查找文件
+        b、url：使用绝对路径
+        c、class：动态代理下的注册-->
+    <mappers>
+        <mapper resource="com/mapper/DepartmentMapper.xml"></mapper>
+    </mappers>
+</configuration>

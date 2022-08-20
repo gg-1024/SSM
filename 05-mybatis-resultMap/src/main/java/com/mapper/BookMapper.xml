@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.BookMapper">
+<!--    <select id="getAllBook" resultType="book">-->
+<!--        select bookid id,bookname name from mystudy.book-->
+<!--    </select>-->
+
+    <select id="getAllBook" resultMap="getAllBookMap">
+        select bookid,bookname,uid from mystudy.book
+    </select>
+    <resultMap id="getAllBookMap" type="book">
+        <!--主键绑定-->
+        <id property="id" column="bookid"></id>
+        <!--非主键绑定-->
+        <result property="name" column="bookname"></result>
+    </resultMap>
+
+
+    <cache></cache>
+</mapper>

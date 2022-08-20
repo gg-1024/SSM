@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <context:component-scan base-package="com"></context:component-scan>
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/pages/"></property>
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+
+    <mvc:annotation-driven></mvc:annotation-driven>
+
+    <mvc:interceptors>
+        <!--这个配置方式是此拦截器对所有的请求都进行拦截-->
+        <!--<ref bean="firstInterceptor"></ref>-->
+
+        <!--标识拦截器，和会拦截的请求，还有过滤的请求-->
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <!--设置不拦截的请求-->
+<!--            <mvc:exclude-mapping path="/hello"/>-->
+            <!--标识拦截所有请求，但是不把包括 /hello-->
+            <ref bean="firstInterceptor"></ref>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <ref bean="secondInterceptor"></ref>
+        </mvc:interceptor>
+    </mvc:interceptors>
+    <!--这两种方式都是对dispatchServlet所处理的所有请求进行拦截-->
+
+
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <!--对应的error会走视图解析器-->
+                <prop key="java.lang.ArithmeticException">error</prop>
+            </props>
+        </property>
+        <!--可以把异常的信息放到request域中,键就是value的值-->
+        <property name="exceptionAttribute" value="ex"></property>
+    </bean>
+</beans>

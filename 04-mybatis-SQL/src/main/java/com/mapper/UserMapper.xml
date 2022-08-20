@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.UserMapper">
+
+    <sql id="getall">
+        id,username as name,password,birthday
+    </sql>
+
+    <select id="getAllUser" resultType="com.pojo.User">
+        select <include refid="getall"></include>
+        from mystudy.user
+    </select>
+
+    <insert id="addUser" parameterType="com.pojo.User">
+        insert into mystudy.user(id, username, password, birthday)
+        values(#{id},#{name},#{password},#{birthday})
+    </insert>
+    
+    <select id="getByLike" parameterType="com.pojo.User" resultType="com.pojo.User">
+        select <include refid="getall"></include>
+        from mystudy.user
+        <where>
+            <if test="name!=null and name!=''">
+                username like #{name}
+            </if>
+            <if test="password!=null and password!=''">
+                 password like #{password}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateUser" parameterType="com.pojo.User">
+        update mystudy.user
+        <if test="name!=null and id!=''">
+            <set>username=#{name}</set>
+        </if>
+        <where>
+            id=#{id}
+        </where>
+    </update>
+
+    <select id="getBySomeId" resultType="com.pojo.User">
+        select <include refid="getall"></include>
+        from mystudy.user
+        <where>
+            id in
+            <foreach collection="array" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+    <insert id="addUsers">
+        insert into mystudy.user(username,password,birthday) values
+        <foreach collection="list" item="user" separator=",">
+            (#{user.name},#{user.password},#{user.birthday})
+        </foreach>
+    </insert>
+
+    <select id="getByMap" resultType="com.pojo.User">
+        select <include refid="getall"></include>
+        From mystudy.user
+        where birthday between #{begin} and #{end}
+    </select>
+
+    <select id="getUserReturnMapById" parameterType="int" resultType="map">
+        select id,username from mystudy.user
+        where id=#{id}
+    </select>
+</mapper>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--1、读取属性文件-->
+    <context:property-placeholder location="jdbc.properties"></context:property-placeholder>
+
+    <!--2、设置数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"></property>
+        <property name="url" value="${jdbc.url}"></property>
+        <property name="username" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+
+    <!--3、设置SqlSessionFactoryBean-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--配置数据源-->
+        <property name="dataSource" ref="dataSource"></property>
+        <!--读取mybatis的核心配置文件-->
+        <property name="configLocation" value="mybatis-config.xml"></property>
+        <!--注册实体类的别名-->
+        <property name="typeAliasesPackage" value="com.pojo"></property>
+    </bean>
+
+    <!--4、注册mapper-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.mapper"></property>
+    </bean>
+
+    <context:component-scan base-package="com.pojo"></context:component-scan>
+    <context:component-scan base-package="com.service.Impl"></context:component-scan>
+    <context:component-scan base-package="com.mapper"></context:component-scan>
+    <context:component-scan base-package="com.aop"></context:component-scan>
+
+    <!--为spring容器中那些配置@aspectJ切面的bean创建代理，织入切面-->
+    <aop:aspectj-autoproxy/>
+
+
+    <!--5、事务处理-->
+    <!--添加书屋管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--事务必须管理数据处理-->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--添加事务的注解驱动-->
+    <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+
+
+    <!--声明式事务-->
+    <!--配置事务切面-->
+    <tx:advice id="myAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*select*" read-only="true"/>
+            <tx:method name="*get*" read-only="true"/>
+            <tx:method name="*search*" read-only="true"/>
+            <tx:method name="*insert*" propagation="REQUIRED" no-rollback-for="ArithmeticException"/>
+            <tx:method name="*add*" propagation="REQUIRED"/>
+            <tx:method name="*set*" propagation="REQUIRED"/>
+            <tx:method name="*save*" propagation="REQUIRED"/>
+            <tx:method name="*" propagation="SUPPORTS"/>
+
+        </tx:attributes>
+    </tx:advice>
+
+    <!--配置切入点-->
+    <aop:config>
+        <aop:pointcut id="mycut" expression="execution(* com.service.impl.*.*(..))"/>
+        <aop:advisor advice-ref="myAdvice" pointcut-ref="mycut"></aop:advisor>
+    </aop:config>
+</beans>
